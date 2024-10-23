@@ -12,3 +12,4 @@ version = "0.1.0"
 
 [dependencies]
 graph = { workspace = true }
+bitvec = "1.0.1"
