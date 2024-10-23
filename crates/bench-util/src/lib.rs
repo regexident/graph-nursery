@@ -8,9 +8,8 @@ use std::{
 
 use directories::ProjectDirs;
 use futures::{StreamExt, TryStreamExt};
-
 use graph_builder::prelude::Idx;
-use rand::prelude::*;
+use rand::Rng;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -88,17 +87,17 @@ pub const LARGE: Input = Input {
     edge_count: 1_000_000,
 };
 
-pub fn uniform_edge_list<NI, EV, F>(
+pub fn uniform_edge_list<NI, EV, F, R>(
     node_count: usize,
     edge_count: usize,
     edge_value: F,
+    rng: &mut R,
 ) -> Vec<(NI, NI, EV)>
 where
     NI: Idx,
     F: Fn(NI, NI) -> EV,
+    R: Rng,
 {
-    let mut rng = StdRng::seed_from_u64(42);
-
     (0..edge_count)
         .map(|_| {
             let source = NI::new(rng.gen_range(0..node_count));
@@ -109,13 +108,12 @@ where
         .collect::<Vec<_>>()
 }
 
-pub fn node_values<NV, F>(node_count: usize, node_value: F) -> Vec<NV>
+pub fn node_values<NV, F, R>(node_count: usize, node_value: F, rng: &mut R) -> Vec<NV>
 where
-    F: Fn(usize, &mut StdRng) -> NV,
+    F: Fn(usize, &mut R) -> NV,
+    R: Rng,
 {
-    let mut rng = StdRng::seed_from_u64(42);
-
     (0..node_count)
-        .map(|n| node_value(n, &mut rng))
+        .map(|n| node_value(n, rng))
         .collect::<Vec<_>>()
 }
