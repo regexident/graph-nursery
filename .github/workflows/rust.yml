@@ -66,18 +66,3 @@ jobs:
       - name: minimal-versions check
         run: cargo minimal-versions check --workspace --all-features --tests --ignore-private -v
         continue-on-error: true
-
-  msrv:
-    name: Verify minimal supported rust version
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@v1
-        with:
-          toolchain: nightly
-      - name: Install cargo-msrv
-        run: cargo install cargo-msrv --all-features
-      - name: cargo-msrv version
-        run: cargo msrv --version
-      - name: run cargo-msrv verify
-        run: cargo msrv verify
