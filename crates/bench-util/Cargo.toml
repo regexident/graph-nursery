@@ -1,0 +1,17 @@
+[package]
+name = "bench-util"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+graph = { workspace = true }
+graph_builder = { workspace = true }
+async-compression = { version = "0.4.17", features = ["tokio", "zstd"] }
+criterion = "0.5.1"
+directories = "5.0.1"
+futures = "0.3.31"
+rand = "0.8.5"
+reqwest = { version = "0.12.8", features = ["stream"] }
+tokio = { version = "1.38.1", features = ["full"], default-features = true }
+tokio-tar = "0.3.1"
+tokio-util = { version = "0.7.11", features = ["io"] }
