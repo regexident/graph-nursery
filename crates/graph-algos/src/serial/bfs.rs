@@ -3,18 +3,6 @@ use std::{collections::VecDeque, hash::Hash};
 use bitvec::prelude::*;
 use graph::prelude::*;
 
-pub fn bfs_directed<NI, G>(
-    graph: &G,
-    node_ids: impl IntoIterator<Item = NI>,
-    direction: Direction,
-) -> DirectedBreadthFirst<'_, G, NI>
-where
-    NI: Idx + Hash,
-    G: Graph<NI> + DirectedDegrees<NI> + DirectedNeighbors<NI> + Sync,
-{
-    DirectedBreadthFirst::new(graph, node_ids, direction)
-}
-
 pub struct DirectedBreadthFirst<'a, G, NI> {
     graph: &'a G,
     seen: BitVec<usize>,
@@ -110,17 +98,6 @@ where
     }
 }
 
-pub fn bfs_undirected<NI, G>(
-    graph: &G,
-    node_ids: impl IntoIterator<Item = NI>,
-) -> UndirectedBreadthFirst<'_, G, NI>
-where
-    NI: Idx + Hash,
-    G: Graph<NI> + UndirectedDegrees<NI> + UndirectedNeighbors<NI> + Sync,
-{
-    UndirectedBreadthFirst::new(graph, node_ids)
-}
-
 pub struct UndirectedBreadthFirst<'a, G, NI> {
     graph: &'a G,
     seen: BitVec<usize>,
@@ -214,7 +191,8 @@ mod tests {
                 .edges(vec![(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (2, 1), (3, 1)])
                 .build();
 
-            let actual: Vec<usize> = bfs_directed(&graph, [0], Direction::Outgoing).collect();
+            let actual: Vec<usize> =
+                DirectedBreadthFirst::new(&graph, [0], Direction::Outgoing).collect();
             let expected: Vec<usize> = vec![0, 1, 2, 3];
 
             assert_eq!(actual, expected);
@@ -227,7 +205,8 @@ mod tests {
                 .edges(vec![(0, 1), (0, 2), (1, 2), (1, 3), (2, 1), (2, 1), (3, 1)])
                 .build();
 
-            let actual: Vec<usize> = bfs_directed(&graph, [0], Direction::Outgoing).collect();
+            let actual: Vec<usize> =
+                DirectedBreadthFirst::new(&graph, [0], Direction::Outgoing).collect();
             let expected: Vec<usize> = vec![0, 1, 2, 3];
 
             assert_eq!(actual, expected);
@@ -241,7 +220,7 @@ mod tests {
             .edges(vec![(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (2, 1), (3, 1)])
             .build();
 
-        let actual: Vec<usize> = bfs_undirected(&graph, [0]).collect();
+        let actual: Vec<usize> = UndirectedBreadthFirst::new(&graph, [0]).collect();
         let expected: Vec<usize> = vec![0, 1, 2, 3];
 
         assert_eq!(actual, expected);

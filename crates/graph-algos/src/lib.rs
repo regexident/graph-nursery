@@ -1,4 +1,3 @@
-pub mod bfs;
-pub mod dfs;
+pub mod serial;
 
 pub mod prelude {}

@@ -1,15 +1,12 @@
 use std::time::Duration;
 
-use bench_util::*;
 use criterion::{black_box, criterion_group, criterion_main, Criterion, SamplingMode};
 use graph::prelude::*;
-use graph_algos::dfs::{dfs_directed, dfs_undirected};
-use rand::prelude::*;
 
-fn dfs(c: &mut Criterion) {
-    let seed = 1;
-    let mut rng = StdRng::seed_from_u64(seed);
+use bench_util::*;
+use graph_algos::serial::*;
 
+fn bfs(c: &mut Criterion) {
     let graph500_scale = 22;
     let edge_list_file = create_graph_500(graph500_scale).unwrap();
     println!("Downloading graph to {edge_list_file:?} ...");
@@ -36,10 +33,11 @@ fn dfs(c: &mut Criterion) {
         })
         .unwrap();
 
-    let count = bfs_directed(&directed_graph, [source_id], Direction::Undirected).count();
+    let count =
+        DirectedBreadthFirst::new(&directed_graph, [source_id], Direction::Undirected).count();
     println!("bfs from node {source_id} visited {count} nodes",);
 
-    let mut group = c.benchmark_group("dfs");
+    let mut group = c.benchmark_group("bfs");
     group
         .sample_size(10)
         .measurement_time(Duration::from_secs(200))
@@ -47,7 +45,8 @@ fn dfs(c: &mut Criterion) {
 
     group.bench_function("directed", |b| {
         b.iter(|| {
-            for id in dfs_directed(&directed_graph, [source_id], Direction::Undirected) {
+            for id in DirectedBreadthFirst::new(&directed_graph, [source_id], Direction::Undirected)
+            {
                 black_box(id);
             }
         })
@@ -55,7 +54,7 @@ fn dfs(c: &mut Criterion) {
 
     group.bench_function("undirected", |b| {
         b.iter(|| {
-            for id in dfs_undirected(&undirected_graph, [source_id]) {
+            for id in UndirectedBreadthFirst::new(&undirected_graph, [source_id]) {
                 black_box(id);
             }
         })
@@ -64,5 +63,5 @@ fn dfs(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, dfs);
+criterion_group!(benches, bfs);
 criterion_main!(benches);
