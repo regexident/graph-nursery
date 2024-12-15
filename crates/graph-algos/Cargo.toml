@@ -11,8 +11,8 @@ edition = "2021"
 version = "0.1.0"
 
 [dependencies]
+bitvec = { workspace = true }
 graph = { workspace = true }
-bitvec = "1.0.1"
 
 [dev-dependencies]
 bench-util = { path = "../bench-util", version = "0.0.0" }
